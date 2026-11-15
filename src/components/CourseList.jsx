@@ -6,6 +6,7 @@ export default function CourseList() {
   // [제공] 초기 배열을 useState로 관리합니다.
   const [courses, setCourses] = useState(initialCourses);
   const [newName, setNewName] = useState('');
+  const [search, setSearch] = useState('');
 
   // [제공] 삭제 기능: filter로 새 배열을 만들어 업데이트합니다.
   function handleDelete(id) {
@@ -42,6 +43,9 @@ export default function CourseList() {
   }
 
   const doneCount = courses.filter(course => course.completed).length;
+  const visibleCourses = courses.filter(course =>
+    course.name.toLowerCase().includes(search.trim().toLowerCase())
+  );
 
   return (
     <>
@@ -68,14 +72,31 @@ export default function CourseList() {
           <input className="input" value={newName} onChange={event => setNewName(event.target.value)} placeholder="새 과목명을 입력하세요" aria-label="새 과목명" />
           <button className="btn primary" type="submit">+ Add Course</button>
         </form>
+        <div className="tools">
+          <input
+            className="input"
+            value={search}
+            onChange={event => setSearch(event.target.value)}
+            placeholder="Search courses"
+            aria-label="Search courses"
+          />
+        </div>
         <div className="list-head">
           <span>COURSE</span>
           <span>CATEGORY</span>
           <span>ACTIONS</span>
         </div>
-        {courses.length === 0 && <div className="empty">등록된 과목이 없습니다.</div>}
-        {courses.map(course => (
-          <CourseItem key={course.id} course={course} onDelete={handleDelete} onToggle={handleToggle} />
+        {visibleCourses.length === 0 && (
+          <div className="empty">표시할 과목이 없습니다.</div>
+        )}
+
+        {visibleCourses.map(course => (
+          <CourseItem
+            key={course.id}
+            course={course}
+            onDelete={handleDelete}
+            onToggle={handleToggle}
+          />
         ))}
       </section>
     </>
